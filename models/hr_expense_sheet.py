@@ -82,23 +82,23 @@ class HrExpenseSheet(models.Model):
             )
             sheet.amount_payable = -sum(rec_lines.mapped("amount_residual"))
 
-    def action_sheet_move_create(self):
-        res = super(HrExpenseSheet, self).action_sheet_move_create()
-        # Reconcile advance of this sheet with the advance_sheet
-        emp_advance = self.env.ref("hr_expense_advance_clearing.product_emp_advance")
-        for sheet in self:
-            move_lines = (
-                sheet.account_move_id.line_ids
-                | sheet.advance_sheet_id.account_move_id.line_ids
-            )
-            account_id = emp_advance.property_account_expense_id.id
-            adv_move_lines = (
-                self.env["account.move.line"]
-                .sudo()
-                .search([("id", "in", move_lines.ids), ("account_id", "=", account_id)])
-            )
-            adv_move_lines.reconcile()
-        return res
+#     def action_sheet_move_create(self):
+#         res = super(HrExpenseSheet, self).action_sheet_move_create()
+#         # Reconcile advance of this sheet with the advance_sheet
+#         emp_advance = self.env.ref("hr_expense_advance_clearing.product_emp_advance")
+#         for sheet in self:
+#             move_lines = (
+#                 sheet.account_move_id.line_ids
+#                 | sheet.advance_sheet_id.account_move_id.line_ids
+#             )
+#             account_id = emp_advance.property_account_expense_id.id
+#             adv_move_lines = (
+#                 self.env["account.move.line"]
+#                 .sudo()
+#                 .search([("id", "in", move_lines.ids), ("account_id", "=", account_id)])
+#             )
+#             adv_move_lines.reconcile()
+#         return res
 
     def open_clear_advance(self):
         self.ensure_one()
